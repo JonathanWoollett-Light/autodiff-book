@@ -1,0 +1,376 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Automatic Differentiation in Rust</title>
+        <meta name="robots" content="noindex" />
+
+
+        <!-- Custom HTML head -->
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Forward Automatic Differentiation</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Reverse Automatic Differentiation</div></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Automatic Differentiation in Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"                  integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"    integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "$", right: "$", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ]
+        });
+    });
+</script>
+<h1 id="forward-automatic-differentiation"><a class="header" href="#forward-automatic-differentiation">Forward Automatic Differentiation</a></h1>
+<p>With some function $ f(x_1,x_2,...,x_n)=y_1,y_2,...,y_m $ the Big O'notation of automatic differentiation is $ O(n) $ for forward autodiff and $ O(m) $ for reverse autodiff.</p>
+<p>With forward differentiation we need a run for each input, while for reverse differentiation we need a run for each output.</p>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<p>The chain rules gives:
+$$\frac{dy}{dx}=\frac{dy}{dz} \cdot \frac{dz}{dx} $$
+We have a function:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn our_function(a: f32, b: f32) -&gt; f32 {
+    let c = a * b;
+    let d = a.sin();
+    let e = c + d;
+    return e;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>We want to calculate $ \frac{\delta e}{\delta a} $ and $ \frac{\delta e}{\delta b} $.</p>
+<h2 id="forward"><a class="header" href="#forward">Forward</a></h2>
+<p>In forward differentiation with each pass through our function we calculate one of the partial deriatives for our inputs.</p>
+<p>Our function outputs an <code>e</code> value and a deriative ($\frac{\delta e}{\delta a}$ or $\frac{\delta e}{\delta b}$). We use a seed value for each input to determine for which input we are calculating the partial derivative. Our function signature becomes:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn our_function(a: f32, b: f32, a_: f32 b_: f32) -&gt; (f32,f32)
+<span class="boring">}
+</span></code></pre></pre>
+<p>With each expression we multiply the previous derivatives effectively suming them.</p>
+<p>For deriative accumulation at each stage we multiply the cumulative derivative by the deriative of the expression (the affect it has relative to the given variable).</p>
+<p>For clarification underlined variales like <code>x_</code> will be repsented like $ x_d $.</p>
+<p>If we perform a run to obtain $\frac{\delta e}{\delta a}$ it follows:</p>
+<h3 id="step-1"><a class="header" href="#step-1">Step 1</a></h3>
+<p>Given:</p>
+<p>$$ \frac{\delta c}{\delta a} = b, \frac{\delta c}{\delta b} = a $$</p>
+<p>$$ \therefore c_d =  \frac{\delta c}{\delta b} a_d + \frac{\delta c}{\delta b} b_d $$</p>
+<p>To propagate the derivative we care about ($ \frac{\delta c}{\delta a} $) we multiply by our seeds values <code>a_</code> and <code>b_</code> to propagate the specific deriative forward.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let c_ = a * b_ + b * a_;
+<span class="boring">}
+</span></code></pre></pre>
+<h3 id="step-2"><a class="header" href="#step-2">Step 2</a></h3>
+<p>$$ \frac{\delta d}{\delta a} = \cos(a) $$</p>
+<p>$$ \therefore d_d = \cos(a) a_d $$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let d_ = a.cos() * a_;
+<span class="boring">}
+</span></code></pre></pre>
+<h3 id="step-3"><a class="header" href="#step-3">Step 3</a></h3>
+<p>$$ \frac{\delta e}{\delta c} = 1, \frac{\delta e}{\delta d} = 1 $$</p>
+<p>$$ \therefore \frac{\delta e}{\delta a} = \frac{\delta e}{\delta c} c_d + \frac{\delta e}{\delta d} d_d $$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let e_ = 1 * c_ + 1 * d_; // `let e_ = c_ + d_;`
+<span class="boring">}
+</span></code></pre></pre>
+<h3 id="summary"><a class="header" href="#summary">Summary</a></h3>
+<p>$$ \frac{\delta e}{\delta a} = \frac{\delta e}{\delta c} \cdot (\frac{\delta c}{\delta a} a_d + \frac{\delta c}{\delta b} b_d)+ \frac{\delta e}{\delta d} \cdot (\frac{\delta d}{\delta a} a_d)$$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let e_ = 1*(b*a_ + a*b_) + 1*(a.cos() * a_); // = 1*c_ + 1*d_;
+<span class="boring">}
+</span></code></pre></pre>
+<ul>
+<li>
+<p>When $a_d=1$ (<code>a_=1</code>) and $b_d=0$ (<code>b_=0</code>):</p>
+<p>$ \frac{\delta e}{\delta a} = \frac{\delta e}{\delta c} \cdot \frac{\delta c}{\delta a}+ \frac{\delta e}{\delta d} \cdot \frac{\delta d}{\delta a} $</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let e_ = 1*b + 1*a.cos();
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+<li>
+<p>When $a_d=0$ (<code>a_=0</code>) and $b_d=1$ (<code>b_=1</code>):</p>
+<p>$ \frac{\delta e}{\delta a} = \frac{\delta e}{\delta c} \cdot \frac{\delta c}{\delta b} $</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let e_ = 1*a;
+<span class="boring">}
+</span></code></pre></pre>
+</li>
+</ul>
+<p>Our final function being:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn our_autodiff_function(a: f32, b: f32, a_: f32, b_: f32) -&gt; (f32,f32) {
+    let c = a * b;
+    let c_ = a*b_ + b*a_;
+    let d = a.sin();
+    let d_ = a.cos() * a_;
+    let e = c + d;
+    let e_ = c_ + d_;
+    return (e, e_);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>For calculating both derivatives $\frac{\delta e}{\delta a}$ and $\frac{\delta e}{\delta b}$:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn outer(a: f32, b: f32) -&gt; (f32,f32) {
+    let a_d = our_autodiff_function(a,b,1.,0.);
+    let b_d = our_autodiff_function(a,b,0.,1.);
+    (a_d,b_d)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h3 id="optimisation"><a class="header" href="#optimisation">Optimisation</a></h3>
+<p>We can avoid re-calculating the same intermediary values each run by splitting <code>our_autodiff_function</code> into 2:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn forward(a: f32, b: f32) -&gt; (f32,f32,f32) {
+    let c = a * b;
+    let d = a.sin();
+    let e = c + d;
+    return (c,d,e);
+}
+fn backward(a: f32, b: f32, c: f32,d: f32,e: f32,a_,b_) -&gt; f32 {
+    let c_ = a*b_ + b*a_;
+    let d_ = a.cos() * a_;
+    let e_ = c_ + d_;
+    return e_;
+}
+fn outer(a: f32, b: f32) -&gt; (f32,f32) {
+    let (c,d,e) = forward(a,b);
+    let a_d = backward(a,b,c,d,e,1.,0.);
+    let b_d = backward(a,b,c,d,e,0.,1.);
+    (a_d,b_d)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>In this optimisation we have lost something however, now we need to hold the values of <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code> and <code>e</code> in memory for the entire lifetime of our <code>outer</code> function. This could potentially be very expensive.</p>
+<p>To avoid this and maintain our speedup we could rewrite it:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn forward_autodiff(a: f32, b: f32) -&gt; (f32,f32,f32) {
+    let c = a * b;
+    let (c_a, c_b) = (c_(a, b, 1., 0.), c_(a, b, 0., 1.));
+    // `b` can be dropped here
+    let d = a.sin();
+    let (d_a, d_b) = (d_(a, 1.), d_(a, 0.));
+    // `a` can be dropped here
+    let e = c + d;
+    // `c` and `d` can be dropped here
+    let (e_a, e_b) = (e_(c_a,d_a), e_(c_b,d_b));
+    return (e, e_a, e_b);
+}
+fn c_(a: f32, b: f32, a_: f32, b_: f32) -&gt; f32 { a*b_ + b*a_ }
+fn d_(a: f32, a_:f32) -&gt; f32 { a.cos() * a_ }
+fn e_(c_: f32, d_: f32) -&gt; f32 { c_ + d_ }
+
+fn outer(a: f32, b: f32) -&gt; (f32,f32) {
+    let (e, a_d, b_d) = forward_autodiff(a, b);
+    (a_d, b_d)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Now we only calculate <code>c</code>, <code>d</code> and <code>e</code> once while dropping variables as to minimise memory usage.</p>
+<p>While we have somewhat obfuscated the O'notation, at each derivative step we still need to calculate $n$ deriatives, so our function is still $O(n)$.</p>
+<p>Further optimization is possible, although this is beyound what this introductory guide will cover.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </body>
+</html>
