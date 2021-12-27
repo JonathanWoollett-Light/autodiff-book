@@ -234,7 +234,7 @@ let e = b+d;
 // We set a variable `x_e` equal to `1.*x_b + 1.*d+x`
 <span class="boring">}
 </span></code></pre></pre>
-<p>It may help your understanding to see that mathematically for each statement we are getting the derivative for <strong>every</strong> previous variable, e.g. for <code>let e = b + d</code> we are getting all the deriatives $\frac{\delta e}{\delta x}$, $\frac{\delta e}{\delta a}$, $\frac{\delta e}{\delta b}$, $\frac{\delta e}{\delta c}$ and $\frac{\delta e}{\delta d}$, and then multiplying all of these by their respective cumulative deriatives for the inputs <code>x_</code>, <code>x_a</code>, <code>x_b</code>, <code>x_c</code> and <code>x_d</code>. But since all of these deriatives except the ones which have components present in the statements work out to be 0, it means:</p>
+<p>It may help your understanding to see that mathematically for each statement we are getting the derivative for <strong>every</strong> previous variable, e.g. for <code>let e = b + d</code> we are getting all the deriatives $\frac{\delta e}{\delta x}$, $\frac{\delta e}{\delta a}$, $\frac{\delta e}{\delta b}$, $\frac{\delta e}{\delta c}$ and $\frac{\delta e}{\delta d}$, and then multiplying all of these by their respective cumulative deriatives for the inputs $\delta x$, $\delta x_a$, $\delta x_b$, $\delta x_c$ and $\delta x_d$ (<code>x_</code>, <code>x_a</code>, <code>x_b</code>, <code>x_c</code> and <code>x_d</code>). But since all of these deriatives except the one which have components present in the statements work out to be 0, it means:</p>
 <p>$$ \frac{\delta e}{\delta x} \cdot \delta x + \frac{\delta e}{\delta a} \cdot \delta x_a + \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta c} \cdot \delta x_c + \frac{\delta e}{\delta d} \cdot \delta x_d \equiv \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta d} \cdot \delta x_d $$</p>
 <p>Since:</p>
 <p>$$ \frac{\delta e}{\delta x} \cdot \delta x + \frac{\delta e}{\delta a} \cdot \delta x_a + \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta c} \cdot \delta x_c + \frac{\delta e}{\delta d} \cdot \delta x_d \equiv 0 \cdot \delta x + 0 \cdot \delta x_a + 1 \cdot \delta x_b + 0 \cdot \delta x_c + 1 \cdot \delta x_d $$</p>
@@ -275,7 +275,6 @@ $$ \therefore \delta a_e = 1 \delta a_c + 1 \delta a_d $$</p>
 <span class="boring">}
 </span></code></pre></pre>
 <h3 id="summary"><a class="header" href="#summary">Summary</a></h3>
-<p>$$ \frac{\delta e}{\delta a} = \delta a_e $$</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -284,7 +283,7 @@ $$ \therefore \delta a_e = 1 \delta a_c + 1 \delta a_d $$</p>
 </span></code></pre></pre>
 <ul>
 <li>
-<p>When $\delta a_ =1$ (<code>a_=1</code>), $\delta b_ =0$ (<code>b_=0</code>):</p>
+<p>When $\delta a=1$ (<code>a_=1</code>), $\delta b=0$ (<code>b_=0</code>):</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -330,6 +329,7 @@ $$ \therefore \delta a_e = 1 \delta a_c + 1 \delta a_d $$</p>
 }
 <span class="boring">}
 </span></code></pre></pre>
+<p>If we wanted to minimise the <code>e</code> we simply subtract a proportion of <code>a_e</code> and <code>b_e</code> from our input <code>a</code> and <code>b</code> values. Doing this is gradient descent.</p>
 <h3 id="optimisation"><a class="header" href="#optimisation">Optimisation</a></h3>
 <p>We can avoid re-calculating the intermediary values each run by splitting <code>our_autodiff_function</code> into 2 functions:</p>
 <pre><pre class="playground"><code class="language-rust">

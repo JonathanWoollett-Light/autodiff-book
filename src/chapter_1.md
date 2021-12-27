@@ -63,7 +63,7 @@ let e = b+d;
 // We set a variable `x_e` equal to `1.*x_b + 1.*d+x`
 ```
 
-It may help your understanding to see that mathematically for each statement we are getting the derivative for **every** previous variable, e.g. for `let e = b + d` we are getting all the deriatives $\frac{\delta e}{\delta x}$, $\frac{\delta e}{\delta a}$, $\frac{\delta e}{\delta b}$, $\frac{\delta e}{\delta c}$ and $\frac{\delta e}{\delta d}$, and then multiplying all of these by their respective cumulative deriatives for the inputs `x_`, `x_a`, `x_b`, `x_c` and `x_d`. But since all of these deriatives except the ones which have components present in the statements work out to be 0, it means:
+It may help your understanding to see that mathematically for each statement we are getting the derivative for **every** previous variable, e.g. for `let e = b + d` we are getting all the deriatives $\frac{\delta e}{\delta x}$, $\frac{\delta e}{\delta a}$, $\frac{\delta e}{\delta b}$, $\frac{\delta e}{\delta c}$ and $\frac{\delta e}{\delta d}$, and then multiplying all of these by their respective cumulative deriatives for the inputs $\delta x$, $\delta x_a$, $\delta x_b$, $\delta x_c$ and $\delta x_d$ (`x_`, `x_a`, `x_b`, `x_c` and `x_d`). But since all of these deriatives except the one which have components present in the statements work out to be 0, it means:
 
 $$ \frac{\delta e}{\delta x} \cdot \delta x + \frac{\delta e}{\delta a} \cdot \delta x_a + \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta c} \cdot \delta x_c + \frac{\delta e}{\delta d} \cdot \delta x_d \equiv \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta d} \cdot \delta x_d $$
 
@@ -115,13 +115,11 @@ let a_e = 1. * a_c + 1. * a_d;
 
 ### Summary
 
-$$ \frac{\delta e}{\delta a} = \delta a_e $$
-
 ```rust
 let a_e = 1.*(b*a_ + a*b_) + 1.*(a.cos() * a_);
 ```
 
-- When $\delta a_ =1$ (`a_=1`), $\delta b_ =0$ (`b_=0`):
+- When $\delta a=1$ (`a_=1`), $\delta b=0$ (`b_=0`):
 
   ```rust
   let a_e = b + a.cos();
@@ -158,6 +156,9 @@ fn outer(a: f32, b: f32) -> (f32,f32) {
     (a_e,b_e)
 }
 ```
+
+If we wanted to minimise the `e` we simply subtract a proportion of `a_e` and `b_e` from our input `a` and `b` values. Doing this is gradient descent.
+
 ### Optimisation
 
 We can avoid re-calculating the intermediary values each run by splitting `our_autodiff_function` into 2 functions:
