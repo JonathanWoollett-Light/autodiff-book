@@ -42,9 +42,9 @@ $$
     \frac{\partial e}{\partial d} = 1 
 $$
 $$ \therefore 
-    \delta e_d = \frac{\partial e}{\partial c} \cdot \delta e
+    \delta e_c = \frac{\partial e}{\partial c} \cdot \delta e
     ,\qquad
-    \delta e_c = \frac{\partial e}{\partial d} \cdot \delta e 
+    \delta e_d = \frac{\partial e}{\partial d} \cdot \delta e 
 $$
 $$ \therefore 
     \delta e_c = \delta e 
@@ -66,7 +66,7 @@ let d_ = e_d;
 $$ d = \sin(a) $$
 $$ \frac{\partial d}{\partial a} = \cos(a) $$
 $$ \therefore 
-    \delta a_d = \frac{\partial d}{\partial a} \cdot \delta d
+    \delta d_a = \frac{\partial d}{\partial a} \cdot \delta d
 $$
 $$ \therefore 
     \delta d_a = \cos(a) \cdot \delta d
