@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_0.html"><strong aria-hidden="true">1.</strong> Setup</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> Forward Automatic Differentiation</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Automatic Differentiation</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_0.html"><strong aria-hidden="true">1.</strong> Setup</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> Forward Automatic Differentiation</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">3.</strong> Reverse Automatic Differentiation</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -385,6 +385,147 @@ fn outer(a: f32, b: f32) -&gt; (f32,f32,f32) {
 <p>Now we only calculate <code>c</code>, <code>d</code> and <code>e</code> once and drop the variables asap to minimise memory usage.</p>
 <p>While we have somewhat obfuscated the O'notation, at each derivative step we still need to calculate $n$ deriatives, so our function is still $O(n)$.</p>
 <p>Further optimization is possible, although this is beyound what this introductory guide will cover.</p>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"                  integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"    integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "$", right: "$", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ]
+        });
+    });
+</script>
+<h1 id="reverse-automatic-differentiation"><a class="header" href="#reverse-automatic-differentiation">Reverse Automatic Differentiation</a></h1>
+<p>With some function $ f(x_1,x_2,...,x_n)=y_1,y_2,...,y_m $ the Big O'notation of reverse automatic differentiation is $ O(m) $.</p>
+<p>With reverse differentiation we need a run for each output.</p>
+<p>Our function signature becomes:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn our_function(a: f32, b: f32, e_: f32) -&gt; (f32,f32,f32)
+<span class="boring">}
+</span></code></pre></pre>
+<p>Unlike forward differentiation we need to seperate the affects of variables in seperate expressions into seperate variables. If we have <code>let x = a + 2;</code> and <code>let y = 2*a</code> we need seperate quantities to represent the seperate affects of <code>a</code> upon these expressions $\delta y_a $ and $\delta x_a $.</p>
+<p>For easy cloning of variables we will use a macro <code>dup!(x,2)</code> which returns a tuple with the given number of elements of clones of the given variable.</p>
+<h2 id="example-run-1"><a class="header" href="#example-run-1">Example run</a></h2>
+<p>If we perform a run through our <a href="./chapter_0.html">Setup</a> function to obtain $\frac{\partial e}{\partial a}$ and $\frac{\partial e}{\partial b}$ it follows:</p>
+<h3 id="step-1-1"><a class="header" href="#step-1-1">Step 1</a></h3>
+<p>$$ 
+\frac{\partial e}{\partial c} = 1
+,\qquad
+\frac{\partial e}{\partial d} = 1 
+$$
+$$ \therefore 
+\delta e_d = \frac{\partial e}{\partial c} \cdot \delta e
+,\qquad
+\delta e_c = \frac{\partial e}{\partial d} \cdot \delta e 
+$$
+$$ \therefore 
+\delta e_c = \delta e 
+,\qquad 
+\delta e_d = \delta e 
+$$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let (e_c,e_d) = dup!(e_, 2);
+<span class="boring">}
+</span></code></pre></pre>
+<h3 id="step-2-1"><a class="header" href="#step-2-1">Step 2</a></h3>
+<p>The quantitiy describing the affect of $ d $ on the output of the function is the sum of all quantities $ x_d $ each which describe the affects of $ d $ on expressions which sum into the output. In this case there is only one $ e_d $.</p>
+<p>$$ \delta d = \delta e_d $$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let d_ = e_d;
+<span class="boring">}
+</span></code></pre></pre>
+<h1 id="step-3-1"><a class="header" href="#step-3-1">Step 3</a></h1>
+<p>$$ \frac{\partial d}{\partial a} = \cos(a) $$
+$$ \therefore 
+\delta a_d = \frac{\partial d}{\partial a} \cdot \delta d
+$$
+$$ \therefore 
+\delta d_a = \cos(a) \cdot \delta d
+$$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let (d_a,) = (a.cos() * d_,);
+<span class="boring">}
+</span></code></pre></pre>
+<h1 id="step-5"><a class="header" href="#step-5">Step 5</a></h1>
+<p>$$ \delta c = \delta e_c $$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let c_ = e_c;
+<span class="boring">}
+</span></code></pre></pre>
+<h1 id="step-6"><a class="header" href="#step-6">Step 6</a></h1>
+<p>$$ 
+\frac{\partial c}{\partial a} = b
+,\qquad
+\frac{\partial c}{\partial b} = a 
+$$
+$$ \therefore 
+\delta c_a = \frac{\partial c}{\partial a} \cdot \delta c
+,\qquad
+\delta c_b = \frac{\partial c}{\partial b} \cdot \delta c
+$$
+$$ \therefore 
+\delta c_a = b \cdot \delta c 
+,\qquad 
+\delta c_b = a \cdot \delta c
+$$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let (c_a,c_b) = (b*c_, a*c_);
+<span class="boring">}
+</span></code></pre></pre>
+<h1 id="step-7"><a class="header" href="#step-7">Step 7</a></h1>
+<p>At this point we sum all the duplicates of our inputs.</p>
+<p>$$ 
+\delta a = \delta d_a + \delta c_a
+,\qquad 
+\delta b = \delta c_b
+$$</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let (a_,b_) = (d_a+c_a, c_b);
+<span class="boring">}
+</span></code></pre></pre>
+<h3 id="summary-1"><a class="header" href="#summary-1">Summary</a></h3>
+<p>Our final function being:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn our_autodiff_function(a: f32, b: f32, e_: f32) -&gt; (f32,f32,f32) {
+    // Forward
+    let c = a * b;
+    let d = a.sin();
+    let e = c + d;
+    // Backward
+    let (e_c, e_d) = dup!(e_, 2);
+    let d_ = e_d;
+    let (d_a,) = (a.cos() * d_,);
+    let c_ = e_c;
+    let (c_a,c_b) = (b*c_, a*c_);
+    let (a_,b_) = (d_a+c_a, c_b);
+
+    return (e, a_, b_);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>As you can see in this code unlike forward auto-diff some of the variables are used multiple times in the backward section (in this specific case only the <code>a</code> variable is duplicated).</p>
+<p>In application these implicit copies may be undesireable, as such this can be replace with manual cloning using <code>dup!</code> to make the code more explicit. You could for instance return a tuple of shared pointers (<a href="https://doc.rust-lang.org/std/rc/struct.Rc.html"><code>Rc</code></a>s or <a href="https://doc.rust-lang.org/std/sync/struct.Arc.html"><code>Arc</code></a>s) which may allow dropping the object earlier and conserving memory.</p>
 
                     </main>
 
