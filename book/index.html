@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Forward Automatic Differentiation - Automatic Differentiation in Rust</title>
+        <title>Setup - Automatic Differentiation in Rust</title>
 
 
         <!-- Custom HTML head -->
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Forward Automatic Differentiation</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Reverse Automatic Differentiation</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_0.html"><strong aria-hidden="true">1.</strong> Setup</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> Forward Automatic Differentiation</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Reverse Automatic Differentiation</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -157,10 +157,7 @@
         });
     });
 </script>
-<h1 id="forward-automatic-differentiation"><a class="header" href="#forward-automatic-differentiation">Forward Automatic Differentiation</a></h1>
-<p>With some function $ f(x_1,x_2,...,x_n)=y_1,y_2,...,y_m $ the Big O'notation of automatic differentiation is $ O(n) $ for forward autodiff and $ O(m) $ for reverse autodiff.</p>
-<p>With forward differentiation we need a run for each input, while for reverse differentiation we need a run for each output.</p>
-<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<h1 id="setup"><a class="header" href="#setup">Setup</a></h1>
 <p>The chain rules gives:
 $$\frac{dy}{dx}=\frac{dy}{dz} \cdot \frac{dz}{dx} $$
 We have a function:</p>
@@ -176,165 +173,16 @@ We have a function:</p>
 <span class="boring">}
 </span></code></pre></pre>
 <p>We want to calculate $ \frac{\delta e}{\delta a} $ and $ \frac{\delta e}{\delta b} $.</p>
-<h2 id="forward"><a class="header" href="#forward">Forward</a></h2>
-<p>In forward differentiation with each pass through our function we calculate one of the partial deriatives for our inputs.</p>
-<p>Our function outputs an <code>e</code> value and a deriative ($\frac{\delta e}{\delta a}$ or $\frac{\delta e}{\delta b}$). We use a seed value for each input to determine for which input we are calculating the partial derivative. Our function signature becomes:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn our_function(a: f32, b: f32, a_: f32 b_: f32) -&gt; (f32,f32)
-<span class="boring">}
-</span></code></pre></pre>
-<p>With each expression we multiply the previous derivatives effectively suming them.</p>
-<p>For deriative accumulation at each stage we multiply the cumulative derivative by the deriative of the expression (the affect it has relative to the given variable).</p>
-<p>For clarification underlined variales like <code>x_</code> will be repsented like $ x_d $.</p>
-<p>If we perform a run to obtain $\frac{\delta e}{\delta a}$ it follows:</p>
-<h3 id="step-1"><a class="header" href="#step-1">Step 1</a></h3>
-<p>Given:</p>
-<p>$$ \frac{\delta c}{\delta a} = b, \frac{\delta c}{\delta b} = a $$</p>
-<p>$$ \therefore c_d =  \frac{\delta c}{\delta b} a_d + \frac{\delta c}{\delta b} b_d $$</p>
-<p>To propagate the derivative we care about ($ \frac{\delta c}{\delta a} $) we multiply by our seeds values <code>a_</code> and <code>b_</code> to propagate the specific deriative forward.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let c_ = a * b_ + b * a_;
-<span class="boring">}
-</span></code></pre></pre>
-<h3 id="step-2"><a class="header" href="#step-2">Step 2</a></h3>
-<p>$$ \frac{\delta d}{\delta a} = \cos(a) $$</p>
-<p>$$ \therefore d_d = \cos(a) a_d $$</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let d_ = a.cos() * a_;
-<span class="boring">}
-</span></code></pre></pre>
-<h3 id="step-3"><a class="header" href="#step-3">Step 3</a></h3>
-<p>$$ \frac{\delta e}{\delta c} = 1, \frac{\delta e}{\delta d} = 1 $$</p>
-<p>$$ \therefore \frac{\delta e}{\delta a} = \frac{\delta e}{\delta c} c_d + \frac{\delta e}{\delta d} d_d $$</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let e_ = 1 * c_ + 1 * d_; // `let e_ = c_ + d_;`
-<span class="boring">}
-</span></code></pre></pre>
-<h3 id="summary"><a class="header" href="#summary">Summary</a></h3>
-<p>$$ \frac{\delta e}{\delta a} = \frac{\delta e}{\delta c} \cdot (\frac{\delta c}{\delta a} a_d + \frac{\delta c}{\delta b} b_d)+ \frac{\delta e}{\delta d} \cdot (\frac{\delta d}{\delta a} a_d)$$</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let e_ = 1*(b*a_ + a*b_) + 1*(a.cos() * a_); // = 1*c_ + 1*d_;
-<span class="boring">}
-</span></code></pre></pre>
-<ul>
-<li>
-<p>When $a_d=1$ (<code>a_=1</code>) and $b_d=0$ (<code>b_=0</code>):</p>
-<p>$ \frac{\delta e}{\delta a} = \frac{\delta e}{\delta c} \cdot \frac{\delta c}{\delta a}+ \frac{\delta e}{\delta d} \cdot \frac{\delta d}{\delta a} $</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let e_ = 1*b + 1*a.cos();
-<span class="boring">}
-</span></code></pre></pre>
-</li>
-<li>
-<p>When $a_d=0$ (<code>a_=0</code>) and $b_d=1$ (<code>b_=1</code>):</p>
-<p>$ \frac{\delta e}{\delta a} = \frac{\delta e}{\delta c} \cdot \frac{\delta c}{\delta b} $</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let e_ = 1*a;
-<span class="boring">}
-</span></code></pre></pre>
-</li>
-</ul>
-<p>Our final function being:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn our_autodiff_function(a: f32, b: f32, a_: f32, b_: f32) -&gt; (f32,f32) {
-    let c = a * b;
-    let c_ = a*b_ + b*a_;
-    let d = a.sin();
-    let d_ = a.cos() * a_;
-    let e = c + d;
-    let e_ = c_ + d_;
-    return (e, e_);
-}
-<span class="boring">}
-</span></code></pre></pre>
-<p>For calculating both derivatives $\frac{\delta e}{\delta a}$ and $\frac{\delta e}{\delta b}$:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn outer(a: f32, b: f32) -&gt; (f32,f32) {
-    let a_d = our_autodiff_function(a,b,1.,0.);
-    let b_d = our_autodiff_function(a,b,0.,1.);
-    (a_d,b_d)
-}
-<span class="boring">}
-</span></code></pre></pre>
-<h3 id="optimisation"><a class="header" href="#optimisation">Optimisation</a></h3>
-<p>We can avoid re-calculating the same intermediary values each run by splitting <code>our_autodiff_function</code> into 2:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn forward(a: f32, b: f32) -&gt; (f32,f32,f32) {
-    let c = a * b;
-    let d = a.sin();
-    let e = c + d;
-    return (c,d,e);
-}
-fn backward(a: f32, b: f32, c: f32,d: f32,e: f32,a_,b_) -&gt; f32 {
-    let c_ = a*b_ + b*a_;
-    let d_ = a.cos() * a_;
-    let e_ = c_ + d_;
-    return e_;
-}
-fn outer(a: f32, b: f32) -&gt; (f32,f32) {
-    let (c,d,e) = forward(a,b);
-    let a_d = backward(a,b,c,d,e,1.,0.);
-    let b_d = backward(a,b,c,d,e,0.,1.);
-    (a_d,b_d)
-}
-<span class="boring">}
-</span></code></pre></pre>
-<p>In this optimisation we have lost something however, now we need to hold the values of <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code> and <code>e</code> in memory for the entire lifetime of our <code>outer</code> function. This could potentially be very expensive.</p>
-<p>To avoid this and maintain our speedup we could rewrite it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn forward_autodiff(a: f32, b: f32) -&gt; (f32,f32,f32) {
-    let c = a * b;
-    let (c_a, c_b) = (c_(a, b, 1., 0.), c_(a, b, 0., 1.));
-    // `b` can be dropped here
-    let d = a.sin();
-    let (d_a, d_b) = (d_(a, 1.), d_(a, 0.));
-    // `a` can be dropped here
-    let e = c + d;
-    // `c` and `d` can be dropped here
-    let (e_a, e_b) = (e_(c_a,d_a), e_(c_b,d_b));
-    return (e, e_a, e_b);
-}
-fn c_(a: f32, b: f32, a_: f32, b_: f32) -&gt; f32 { a*b_ + b*a_ }
-fn d_(a: f32, a_:f32) -&gt; f32 { a.cos() * a_ }
-fn e_(c_: f32, d_: f32) -&gt; f32 { c_ + d_ }
-
-fn outer(a: f32, b: f32) -&gt; (f32,f32) {
-    let (e, a_d, b_d) = forward_autodiff(a, b);
-    (a_d, b_d)
-}
-<span class="boring">}
-</span></code></pre></pre>
-<p>Now we only calculate <code>c</code>, <code>d</code> and <code>e</code> once while dropping variables as to minimise memory usage.</p>
-<p>While we have somewhat obfuscated the O'notation, at each derivative step we still need to calculate $n$ deriatives, so our function is still $O(n)$.</p>
-<p>Further optimization is possible, although this is beyound what this introductory guide will cover.</p>
+<p>In the mathematical formulas underlined variables like <code>x_</code> will be repsented like $ \delta x $ or variables like <code>x_a</code> represented like $ \delta x_a $.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
+                            <a rel="next" href="chapter_1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -343,6 +191,9 @@ fn outer(a: f32, b: f32) -&gt; (f32,f32) {
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
+                    <a rel="next" href="chapter_1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
