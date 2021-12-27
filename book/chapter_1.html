@@ -160,8 +160,8 @@
 <h1 id="forward-automatic-differentiation"><a class="header" href="#forward-automatic-differentiation">Forward Automatic Differentiation</a></h1>
 <p>With some function $ f(x_1,x_2,...,x_n)=y_1,y_2,...,y_m $ the Big O'notation of forward automatic differentiation is $ O(n) $.</p>
 <p>With reverse differentiation we need a run for each input.</p>
-<p>In the simplest implementation with forward differentiation with each pass through our function we calculate the partial deriatives for one of our inputs (e.g. $\frac{\delta y_1}{\delta x_4}$,$\frac{\delta y_2}{\delta x_4}$,...,$\frac{\delta y_m}{\delta x_4}$).</p>
-<p>In our specific case we have a function which has a single output (<code>e</code>), therefore we are concerned with computing $\frac{\delta e}{\delta a}$ and $\frac{\delta e}{\delta b}$.</p>
+<p>In the simplest implementation with forward differentiation with each pass through our function we calculate the partial deriatives for one of our inputs (e.g. $\frac{\partial y_1}{\partial x_4}$,$\frac{\partial y_2}{\partial x_4}$,...,$\frac{\partial y_m}{\partial x_4}$).</p>
+<p>In our specific case we have a function which has a single output (<code>e</code>), therefore we are concerned with computing $\frac{\partial e}{\partial a}$ and $\frac{\partial e}{\partial b}$.</p>
 <p>For this simple implementation that caluclate the partial derivatives for 1 input in each run, we need to pass a set of seeds which effectively determine which input we are calculating the partial deratives for. In implementation this is multiple <code>f32</code>s where 1 is <code>1.</code> for the input we are calculating and the rest are <code>0.</code>.</p>
 <p>E.g.</p>
 <pre><pre class="playground"><code class="language-rust">
@@ -201,18 +201,18 @@ let e = b+d;
 // We set a variable `x_e` equal to `1.*x_b + 1.*d+x`
 <span class="boring">}
 </span></code></pre></pre>
-<p>It may help your understanding to see that mathematically for each statement we are getting the derivative for <strong>every</strong> previous variable, e.g. for <code>let e = b + d</code> we are getting all the deriatives $\frac{\delta e}{\delta x}$, $\frac{\delta e}{\delta a}$, $\frac{\delta e}{\delta b}$, $\frac{\delta e}{\delta c}$ and $\frac{\delta e}{\delta d}$, and then multiplying all of these by their respective cumulative deriatives for the inputs $\delta x$, $\delta x_a$, $\delta x_b$, $\delta x_c$ and $\delta x_d$ (<code>x_</code>, <code>x_a</code>, <code>x_b</code>, <code>x_c</code> and <code>x_d</code>). But since all of these deriatives except the one which have components present in the statements work out to be 0, it means:</p>
-<p>$$ \frac{\delta e}{\delta x} \cdot \delta x + \frac{\delta e}{\delta a} \cdot \delta x_a + \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta c} \cdot \delta x_c + \frac{\delta e}{\delta d} \cdot \delta x_d \equiv \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta d} \cdot \delta x_d $$</p>
+<p>It may help your understanding to see that mathematically for each statement we could get the derivatives for <strong>every</strong> previous variable, e.g. for <code>let e = b + d</code> we get all the deriatives $\frac{\partial e}{\partial x}$, $\frac{\partial e}{\partial a}$, $\frac{\partial e}{\partial b}$, $\frac{\partial e}{\partial c}$ and $\frac{\partial e}{\partial d}$, and then multiply these by all of their respective cumulative deriatives for the inputs $\delta x$, $\delta x_a$, $\delta x_b$, $\delta x_c$ and $\delta x_d$ (<code>x_</code>, <code>x_a</code>, <code>x_b</code>, <code>x_c</code> and <code>x_d</code>). But since all of these deriatives except the ones which have components present in the operation work out to be 0, it means for flat addition:</p>
+<p>$$ \frac{\partial e}{\partial x} \cdot \delta x + \frac{\partial e}{\partial a} \cdot \delta x_a + \frac{\partial e}{\partial b} \cdot \delta x_b + \frac{\partial e}{\partial c} \cdot \delta x_c + \frac{\partial e}{\partial d} \cdot \delta x_d \equiv \frac{\partial e}{\partial b} \cdot \delta x_b + \frac{\partial e}{\partial d} \cdot \delta x_d $$</p>
 <p>Since:</p>
-<p>$$ \frac{\delta e}{\delta x} \cdot \delta x + \frac{\delta e}{\delta a} \cdot \delta x_a + \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta c} \cdot \delta x_c + \frac{\delta e}{\delta d} \cdot \delta x_d \equiv 0 \cdot \delta x + 0 \cdot \delta x_a + 1 \cdot \delta x_b + 0 \cdot \delta x_c + 1 \cdot \delta x_d $$</p>
-<p>Thus while for any operation we are effectively summing all the derivative by all the cumulative derivatives, since we have specific knowledge about operations we optimize this by suming only the deriatives for which we know are useful (non-zero).</p>
-<p>Understanding this helps you understand how this can be applied to any operation and automatic differentiation is not simply formed from some random rules.</p>
+<p>$$ \frac{\partial e}{\partial x} \cdot \delta x + \frac{\partial e}{\partial a} \cdot \delta x_a + \frac{\partial e}{\partial b} \cdot \delta x_b + \frac{\partial e}{\partial c} \cdot \delta x_c + \frac{\partial e}{\partial d} \cdot \delta x_d \equiv 0 \cdot \delta x + 0 \cdot \delta x_a + 1 \cdot \delta x_b + 0 \cdot \delta x_c + 1 \cdot \delta x_d $$</p>
+<p>Thus while for any operation we may aswell be effectively summing all of the derivative by all of the cumulative derivatives, since we have specific knowledge about operations we can optimize this by suming only the deriatives for we know are useful (in other words non-zero).</p>
+<p>Understanding this helps you understand how this can be applied to any operation and that the rules for automatic differentiation are realy quite simple.</p>
 <h2 id="example-run"><a class="header" href="#example-run">Example run</a></h2>
-<p>If we perform a run to obtain $\frac{\delta e}{\delta a}$ on the function given in <a href="./chapter_0.html">Setup</a> it follows:</p>
+<p>If we perform a run through our <a href="./chapter_0.html">Setup</a> function to obtain $\frac{\partial e}{\partial a}$ it follows:</p>
 <h3 id="step-1"><a class="header" href="#step-1">Step 1</a></h3>
 <p>$$ c = a \cdot b $$
-$$ \therefore \frac{\delta c}{\delta a} = b, \frac{\delta c}{\delta b} = a $$
-$$ \therefore \delta a_c = \frac{\delta c}{\delta a} \delta a + \frac{\delta c}{\delta b} \delta b $$
+$$ \therefore \frac{\partial c}{\partial a} = b, \frac{\partial c}{\partial b} = a $$
+$$ \therefore \delta a_c = \frac{\partial c}{\partial a} \delta a + \frac{\partial c}{\partial b} \delta b $$
 $$ \therefore \delta a_c = b \cdot \delta a + a \cdot \delta b $$</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
@@ -222,7 +222,7 @@ $$ \therefore \delta a_c = b \cdot \delta a + a \cdot \delta b $$</p>
 </span></code></pre></pre>
 <h3 id="step-2"><a class="header" href="#step-2">Step 2</a></h3>
 <p>$$ d = \sin(a) $$
-$$ \therefore \frac{\delta d}{\delta a} = \cos(a) $$
+$$ \therefore \frac{\partial d}{\partial a} = \cos(a) $$
 $$ \therefore \delta a_d = \cos(a) \cdot \delta a $$</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
@@ -232,8 +232,8 @@ $$ \therefore \delta a_d = \cos(a) \cdot \delta a $$</p>
 </span></code></pre></pre>
 <h3 id="step-3"><a class="header" href="#step-3">Step 3</a></h3>
 <p>$$ e = c + d $$
-$$ \therefore \frac{\delta e}{\delta c} = 1, \frac{\delta e}{\delta d} = 1 $$
-$$ \therefore \delta a_e = \frac{\delta e}{\delta c} \cdot \delta a_c + \frac{\delta e}{\delta d} \cdot \delta a_d $$
+$$ \therefore \frac{\partial e}{\partial c} = 1, \frac{\partial e}{\partial d} = 1 $$
+$$ \therefore \delta a_e = \frac{\partial e}{\partial c} \cdot \delta a_c + \frac{\partial e}{\partial d} \cdot \delta a_d $$
 $$ \therefore \delta a_e = 1 \delta a_c + 1 \delta a_d $$</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
@@ -242,10 +242,11 @@ $$ \therefore \delta a_e = 1 \delta a_c + 1 \delta a_d $$</p>
 <span class="boring">}
 </span></code></pre></pre>
 <h3 id="summary"><a class="header" href="#summary">Summary</a></h3>
+<p>Overall we could say:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>let a_e = 1.*(b*a_ + a*b_) + 1.*(a.cos() * a_);
+</span>let e_ = 1.*(b*a_ + a*b_) + 1.*(a.cos() * a_);
 <span class="boring">}
 </span></code></pre></pre>
 <ul>
@@ -268,8 +269,7 @@ $$ \therefore \delta a_e = 1 \delta a_c + 1 \delta a_d $$</p>
 </span></code></pre></pre>
 </li>
 </ul>
-<p>Therefore:</p>
-<p>$$ \frac{\delta e}{\delta a} = b + \cos(a), \frac{\delta e}{\delta b} = a $$</p>
+<p>$$ \therefore \frac{\partial e}{\partial a} = b + \cos(a), \frac{\partial e}{\partial b} = a $$</p>
 <p>Our final function being:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
@@ -285,13 +285,13 @@ $$ \therefore \delta a_e = 1 \delta a_c + 1 \delta a_d $$</p>
 }
 <span class="boring">}
 </span></code></pre></pre>
-<p>For calculating both derivatives $\frac{\delta e}{\delta a}$ and $\frac{\delta e}{\delta b}$:</p>
+<p>For calculating the quantities $\frac{\partial e}{\partial a} |_{a=x}$ and $\frac{\partial e}{\partial b} | _{b=y}$:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>fn outer(a: f32, b: f32) -&gt; (f32,f32) {
-    let a_e = our_autodiff_function(a,b,1.,0.);
-    let b_e = our_autodiff_function(a,b,0.,1.);
+</span>fn outer(x: f32, y: f32) -&gt; (f32,f32) {
+    let a_e = our_autodiff_function(x,y,1.,0.);
+    let b_e = our_autodiff_function(x,y,0.,1.);
     (a_e,b_e)
 }
 <span class="boring">}

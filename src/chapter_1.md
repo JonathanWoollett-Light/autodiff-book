@@ -20,9 +20,9 @@ With some function $ f(x_1,x_2,...,x_n)=y_1,y_2,...,y_m $ the Big O'notation of 
 
 With reverse differentiation we need a run for each input.
 
-In the simplest implementation with forward differentiation with each pass through our function we calculate the partial deriatives for one of our inputs (e.g. $\frac{\delta y_1}{\delta x_4}$,$\frac{\delta y_2}{\delta x_4}$,...,$\frac{\delta y_m}{\delta x_4}$).
+In the simplest implementation with forward differentiation with each pass through our function we calculate the partial deriatives for one of our inputs (e.g. $\frac{\partial y_1}{\partial x_4}$,$\frac{\partial y_2}{\partial x_4}$,...,$\frac{\partial y_m}{\partial x_4}$).
 
-In our specific case we have a function which has a single output (`e`), therefore we are concerned with computing $\frac{\delta e}{\delta a}$ and $\frac{\delta e}{\delta b}$.
+In our specific case we have a function which has a single output (`e`), therefore we are concerned with computing $\frac{\partial e}{\partial a}$ and $\frac{\partial e}{\partial b}$.
 
 For this simple implementation that caluclate the partial derivatives for 1 input in each run, we need to pass a set of seeds which effectively determine which input we are calculating the partial deratives for. In implementation this is multiple `f32`s where 1 is `1.` for the input we are calculating and the rest are `0.`.
 
@@ -63,28 +63,28 @@ let e = b+d;
 // We set a variable `x_e` equal to `1.*x_b + 1.*d+x`
 ```
 
-It may help your understanding to see that mathematically for each statement we are getting the derivative for **every** previous variable, e.g. for `let e = b + d` we are getting all the deriatives $\frac{\delta e}{\delta x}$, $\frac{\delta e}{\delta a}$, $\frac{\delta e}{\delta b}$, $\frac{\delta e}{\delta c}$ and $\frac{\delta e}{\delta d}$, and then multiplying all of these by their respective cumulative deriatives for the inputs $\delta x$, $\delta x_a$, $\delta x_b$, $\delta x_c$ and $\delta x_d$ (`x_`, `x_a`, `x_b`, `x_c` and `x_d`). But since all of these deriatives except the one which have components present in the statements work out to be 0, it means:
+It may help your understanding to see that mathematically for each statement we could get the derivatives for **every** previous variable, e.g. for `let e = b + d` we get all the deriatives $\frac{\partial e}{\partial x}$, $\frac{\partial e}{\partial a}$, $\frac{\partial e}{\partial b}$, $\frac{\partial e}{\partial c}$ and $\frac{\partial e}{\partial d}$, and then multiply these by all of their respective cumulative deriatives for the inputs $\delta x$, $\delta x_a$, $\delta x_b$, $\delta x_c$ and $\delta x_d$ (`x_`, `x_a`, `x_b`, `x_c` and `x_d`). But since all of these deriatives except the ones which have components present in the operation work out to be 0, it means for flat addition:
 
-$$ \frac{\delta e}{\delta x} \cdot \delta x + \frac{\delta e}{\delta a} \cdot \delta x_a + \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta c} \cdot \delta x_c + \frac{\delta e}{\delta d} \cdot \delta x_d \equiv \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta d} \cdot \delta x_d $$
+$$ \frac{\partial e}{\partial x} \cdot \delta x + \frac{\partial e}{\partial a} \cdot \delta x_a + \frac{\partial e}{\partial b} \cdot \delta x_b + \frac{\partial e}{\partial c} \cdot \delta x_c + \frac{\partial e}{\partial d} \cdot \delta x_d \equiv \frac{\partial e}{\partial b} \cdot \delta x_b + \frac{\partial e}{\partial d} \cdot \delta x_d $$
 
 Since:
 
-$$ \frac{\delta e}{\delta x} \cdot \delta x + \frac{\delta e}{\delta a} \cdot \delta x_a + \frac{\delta e}{\delta b} \cdot \delta x_b + \frac{\delta e}{\delta c} \cdot \delta x_c + \frac{\delta e}{\delta d} \cdot \delta x_d \equiv 0 \cdot \delta x + 0 \cdot \delta x_a + 1 \cdot \delta x_b + 0 \cdot \delta x_c + 1 \cdot \delta x_d $$
+$$ \frac{\partial e}{\partial x} \cdot \delta x + \frac{\partial e}{\partial a} \cdot \delta x_a + \frac{\partial e}{\partial b} \cdot \delta x_b + \frac{\partial e}{\partial c} \cdot \delta x_c + \frac{\partial e}{\partial d} \cdot \delta x_d \equiv 0 \cdot \delta x + 0 \cdot \delta x_a + 1 \cdot \delta x_b + 0 \cdot \delta x_c + 1 \cdot \delta x_d $$
 
-Thus while for any operation we are effectively summing all the derivative by all the cumulative derivatives, since we have specific knowledge about operations we optimize this by suming only the deriatives for which we know are useful (non-zero).
+Thus while for any operation we may aswell be effectively summing all of the derivative by all of the cumulative derivatives, since we have specific knowledge about operations we can optimize this by suming only the deriatives for we know are useful (in other words non-zero).
 
-Understanding this helps you understand how this can be applied to any operation and automatic differentiation is not simply formed from some random rules.
+Understanding this helps you understand how this can be applied to any operation and that the rules for automatic differentiation are realy quite simple.
 
 
 ## Example run
 
-If we perform a run to obtain $\frac{\delta e}{\delta a}$ on the function given in [Setup](./chapter_0.md) it follows:
+If we perform a run through our [Setup](./chapter_0.md) function to obtain $\frac{\partial e}{\partial a}$ it follows:
 
 ### Step 1
 
 $$ c = a \cdot b $$
-$$ \therefore \frac{\delta c}{\delta a} = b, \frac{\delta c}{\delta b} = a $$
-$$ \therefore \delta a_c = \frac{\delta c}{\delta a} \delta a + \frac{\delta c}{\delta b} \delta b $$
+$$ \therefore \frac{\partial c}{\partial a} = b, \frac{\partial c}{\partial b} = a $$
+$$ \therefore \delta a_c = \frac{\partial c}{\partial a} \delta a + \frac{\partial c}{\partial b} \delta b $$
 $$ \therefore \delta a_c = b \cdot \delta a + a \cdot \delta b $$
 
 ```rust
@@ -93,9 +93,8 @@ let a_c = b * a_ + a * b_;
 
 ### Step 2
 
-
 $$ d = \sin(a) $$
-$$ \therefore \frac{\delta d}{\delta a} = \cos(a) $$
+$$ \therefore \frac{\partial d}{\partial a} = \cos(a) $$
 $$ \therefore \delta a_d = \cos(a) \cdot \delta a $$
 
 ```rust
@@ -105,8 +104,8 @@ let a_d = a.cos() * a_;
 ### Step 3
 
 $$ e = c + d $$
-$$ \therefore \frac{\delta e}{\delta c} = 1, \frac{\delta e}{\delta d} = 1 $$
-$$ \therefore \delta a_e = \frac{\delta e}{\delta c} \cdot \delta a_c + \frac{\delta e}{\delta d} \cdot \delta a_d $$
+$$ \therefore \frac{\partial e}{\partial c} = 1, \frac{\partial e}{\partial d} = 1 $$
+$$ \therefore \delta a_e = \frac{\partial e}{\partial c} \cdot \delta a_c + \frac{\partial e}{\partial d} \cdot \delta a_d $$
 $$ \therefore \delta a_e = 1 \delta a_c + 1 \delta a_d $$
 
 ```rust
@@ -115,8 +114,10 @@ let a_e = 1. * a_c + 1. * a_d;
 
 ### Summary
 
+Overall we could say:
+
 ```rust
-let a_e = 1.*(b*a_ + a*b_) + 1.*(a.cos() * a_);
+let e_ = 1.*(b*a_ + a*b_) + 1.*(a.cos() * a_);
 ```
 
 - When $\delta a=1$ (`a_=1`), $\delta b=0$ (`b_=0`):
@@ -131,9 +132,7 @@ let a_e = 1.*(b*a_ + a*b_) + 1.*(a.cos() * a_);
   let b_e = a;
   ```
 
-Therefore:
-
-$$ \frac{\delta e}{\delta a} = b + \cos(a), \frac{\delta e}{\delta b} = a $$
+$$ \therefore \frac{\partial e}{\partial a} = b + \cos(a), \frac{\partial e}{\partial b} = a $$
 
 Our final function being:
 ```rust
@@ -148,11 +147,11 @@ fn our_autodiff_function(a: f32, b: f32, a_: f32, b_: f32) -> (f32,f32) {
 }
 ```
 
-For calculating both derivatives $\frac{\delta e}{\delta a}$ and $\frac{\delta e}{\delta b}$:
+For calculating the quantities $\frac{\partial e}{\partial a} |_{a=x}$ and $\frac{\partial e}{\partial b} | _{b=y}$:
 ```rust
-fn outer(a: f32, b: f32) -> (f32,f32) {
-    let a_e = our_autodiff_function(a,b,1.,0.);
-    let b_e = our_autodiff_function(a,b,0.,1.);
+fn outer(x: f32, y: f32) -> (f32,f32) {
+    let a_e = our_autodiff_function(x,y,1.,0.);
+    let b_e = our_autodiff_function(x,y,0.,1.);
     (a_e,b_e)
 }
 ```
