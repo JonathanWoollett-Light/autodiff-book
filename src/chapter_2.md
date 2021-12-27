@@ -61,7 +61,7 @@ $$ \delta d = \delta e_d $$
 let d_ = e_d;
 ```
 
-# Step 3
+### Step 3
 $$ \frac{\partial d}{\partial a} = \cos(a) $$
 $$ \therefore 
     \delta a_d = \frac{\partial d}{\partial a} \cdot \delta d
@@ -73,13 +73,13 @@ $$
 let (d_a,) = (a.cos() * d_,);
 ```
 
-# Step 5
+### Step 5
 $$ \delta c = \delta e_c $$
 ```rust
 let c_ = e_c;
 ```
 
-# Step 6
+### Step 6
 $$ 
     \frac{\partial c}{\partial a} = b
     ,\qquad
@@ -98,7 +98,7 @@ $$
 ```rust
 let (c_a,c_b) = (b*c_, a*c_);
 ```
-# Step 7
+### Step 7
 
 At this point we sum all the duplicates of our inputs.
 

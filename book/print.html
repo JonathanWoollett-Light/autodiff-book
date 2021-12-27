@@ -445,7 +445,7 @@ $$</p>
 </span>let d_ = e_d;
 <span class="boring">}
 </span></code></pre></pre>
-<h1 id="step-3-1"><a class="header" href="#step-3-1">Step 3</a></h1>
+<h3 id="step-3-1"><a class="header" href="#step-3-1">Step 3</a></h3>
 <p>$$ \frac{\partial d}{\partial a} = \cos(a) $$
 $$ \therefore 
 \delta a_d = \frac{\partial d}{\partial a} \cdot \delta d
@@ -459,7 +459,7 @@ $$</p>
 </span>let (d_a,) = (a.cos() * d_,);
 <span class="boring">}
 </span></code></pre></pre>
-<h1 id="step-5"><a class="header" href="#step-5">Step 5</a></h1>
+<h3 id="step-5"><a class="header" href="#step-5">Step 5</a></h3>
 <p>$$ \delta c = \delta e_c $$</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
@@ -467,7 +467,7 @@ $$</p>
 </span>let c_ = e_c;
 <span class="boring">}
 </span></code></pre></pre>
-<h1 id="step-6"><a class="header" href="#step-6">Step 6</a></h1>
+<h3 id="step-6"><a class="header" href="#step-6">Step 6</a></h3>
 <p>$$ 
 \frac{\partial c}{\partial a} = b
 ,\qquad
@@ -489,7 +489,7 @@ $$</p>
 </span>let (c_a,c_b) = (b*c_, a*c_);
 <span class="boring">}
 </span></code></pre></pre>
-<h1 id="step-7"><a class="header" href="#step-7">Step 7</a></h1>
+<h3 id="step-7"><a class="header" href="#step-7">Step 7</a></h3>
 <p>At this point we sum all the duplicates of our inputs.</p>
 <p>$$ 
 \delta a = \delta d_a + \delta c_a
