@@ -415,7 +415,8 @@ fn outer(a: f32, b: f32) -&gt; (f32,f32,f32) {
 <h2 id="example-run-1"><a class="header" href="#example-run-1">Example run</a></h2>
 <p>If we perform a run through our <a href="./chapter_0.html">Setup</a> function to obtain $\frac{\partial e}{\partial a}$ and $\frac{\partial e}{\partial b}$ it follows:</p>
 <h3 id="step-1-1"><a class="header" href="#step-1-1">Step 1</a></h3>
-<p>$$ 
+<p>$$ e = c + d $$
+$$ 
 \frac{\partial e}{\partial c} = 1
 ,\qquad
 \frac{\partial e}{\partial d} = 1 
@@ -446,7 +447,8 @@ $$</p>
 <span class="boring">}
 </span></code></pre></pre>
 <h3 id="step-3-1"><a class="header" href="#step-3-1">Step 3</a></h3>
-<p>$$ \frac{\partial d}{\partial a} = \cos(a) $$
+<p>$$ d = \sin(a) $$
+$$ \frac{\partial d}{\partial a} = \cos(a) $$
 $$ \therefore 
 \delta a_d = \frac{\partial d}{\partial a} \cdot \delta d
 $$
@@ -468,7 +470,8 @@ $$</p>
 <span class="boring">}
 </span></code></pre></pre>
 <h3 id="step-6"><a class="header" href="#step-6">Step 6</a></h3>
-<p>$$ 
+<p>$$ c = a \cdot b $$
+$$ 
 \frac{\partial c}{\partial a} = b
 ,\qquad
 \frac{\partial c}{\partial b} = a 

@@ -35,6 +35,7 @@ For easy cloning of variables we will use a macro `dup!(x,2)` which returns a tu
 If we perform a run through our [Setup](./chapter_0.md) function to obtain $\frac{\partial e}{\partial a}$ and $\frac{\partial e}{\partial b}$ it follows:
 
 ### Step 1
+$$ e = c + d $$
 $$ 
     \frac{\partial e}{\partial c} = 1
     ,\qquad
@@ -62,6 +63,7 @@ let d_ = e_d;
 ```
 
 ### Step 3
+$$ d = \sin(a) $$
 $$ \frac{\partial d}{\partial a} = \cos(a) $$
 $$ \therefore 
     \delta a_d = \frac{\partial d}{\partial a} \cdot \delta d
@@ -80,6 +82,7 @@ let c_ = e_c;
 ```
 
 ### Step 6
+$$ c = a \cdot b $$
 $$ 
     \frac{\partial c}{\partial a} = b
     ,\qquad
