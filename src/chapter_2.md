@@ -132,6 +132,6 @@ fn our_autodiff_function(a: f32, b: f32, e_: f32) -> (f32,f32,f32) {
 }
 ```
 
-As you can see in this code unlike forward auto-diff some of the variables are used multiple times in the backward section (in this specific case only the `a` variable is duplicated).
+As you can see in this code unlike forward auto-diff some of the variables are neccessarily used multiple times even before optimizations in the backward section (in this specific case only the `a` variable is duplicated).
 
-In application these implicit copies may be undesireable, as such this can be replace with manual cloning using `dup!` to make the code more explicit. You could for instance return a tuple of shared pointers ([`Rc`](https://doc.rust-lang.org/std/rc/struct.Rc.html)s or [`Arc`](https://doc.rust-lang.org/std/sync/struct.Arc.html)s) which may allow dropping the object earlier and conserving memory.
+In application these implicit copies may be undesireable (or an type may not implement [`Copy`](https://doc.rust-lang.org/std/marker/trait.Copy.html)), as such this can be replaced with manual cloning using `dup!` to make the code more explicit. You could also for instance return a tuple of shared pointers ([`Rc`](https://doc.rust-lang.org/std/rc/struct.Rc.html)s or [`Arc`](https://doc.rust-lang.org/std/sync/struct.Arc.html)s) which may allow dropping the object earlier and conserving memory.

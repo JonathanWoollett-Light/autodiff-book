@@ -524,8 +524,8 @@ $$</p>
 }
 <span class="boring">}
 </span></code></pre></pre>
-<p>As you can see in this code unlike forward auto-diff some of the variables are used multiple times in the backward section (in this specific case only the <code>a</code> variable is duplicated).</p>
-<p>In application these implicit copies may be undesireable, as such this can be replace with manual cloning using <code>dup!</code> to make the code more explicit. You could for instance return a tuple of shared pointers (<a href="https://doc.rust-lang.org/std/rc/struct.Rc.html"><code>Rc</code></a>s or <a href="https://doc.rust-lang.org/std/sync/struct.Arc.html"><code>Arc</code></a>s) which may allow dropping the object earlier and conserving memory.</p>
+<p>As you can see in this code unlike forward auto-diff some of the variables are neccessarily used multiple times even before optimizations in the backward section (in this specific case only the <code>a</code> variable is duplicated).</p>
+<p>In application these implicit copies may be undesireable (or an type may not implement <a href="https://doc.rust-lang.org/std/marker/trait.Copy.html"><code>Copy</code></a>), as such this can be replaced with manual cloning using <code>dup!</code> to make the code more explicit. You could also for instance return a tuple of shared pointers (<a href="https://doc.rust-lang.org/std/rc/struct.Rc.html"><code>Rc</code></a>s or <a href="https://doc.rust-lang.org/std/sync/struct.Arc.html"><code>Arc</code></a>s) which may allow dropping the object earlier and conserving memory.</p>
 
                     </main>
 
