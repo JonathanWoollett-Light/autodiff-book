@@ -27,6 +27,6 @@ fn our_function(a: f32, b: f32) -> f32 {
     return e;
 }
 ```
-We want to calculate $ \frac{\delta e}{\delta a} $ and $ \frac{\delta e}{\delta b} $.
+We want to calculate $ \frac{\partial e}{\partial a} $ and $ \frac{\partial e}{\partial b} $.
 
 In the mathematical formulas underlined variables like `x_` will be repsented like $ \delta x $ or variables like `x_a` represented like $ \delta x_a $.
